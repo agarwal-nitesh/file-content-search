@@ -1,0 +1,40 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /fs
+  connection-timeout: 30000
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+    min-response-size: 10240
+  tomcat:
+    accept-count: 250
+    max-connections: 25000
+    max-threads: 500
+    min-spare-threads: 60
+    accesslog:
+      enabled: true
+      prefix: access-log
+      file-date-format: .yyyy-MM-dd
+      suffix: .log
+      pattern: '%t %a "%r" %s %D'
+
+spring:
+  elasticsearch.rest:
+    username: elastic
+    password: 6l2suDT5cLpESK-j2o5H
+  data:
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: localhost:9300
+  jpa:
+    hibernate:
+      ddl-auto: update
+  application:
+    name: file-search-master
+  datasource:
+    url: jdbc:postgresql://localhost:5432/file_content_search
+    username: db_user
+    password: password
+
+management.health.elasticsearch.enabled: false
