@@ -33,8 +33,21 @@ spring:
   application:
     name: file-search-master
   datasource:
-    url: jdbc:postgresql://localhost:5432/file_content_search
+    url: jdbc:postgresql://localhost:5432/file_content_search?currentSchema=fs
     username: db_user
     password: password
 
 management.health.elasticsearch.enabled: false
+
+files-config:
+  tenants:
+    - name: zkip
+      file-resource:
+        s3:
+          access-key: ----
+          secret-key: ----
+          buckets:
+            - name: fs-search
+              url: arn:aws:s3:::fs-search
+              region: me-south-1
+
