@@ -23,3 +23,8 @@ http://localhost:8085/fs/swagger-ui/index.html
 
 ### Architecture
 ![alt text](design.png "Architecture")
+
+
+### PRD
+[PRD Notion](https://www.notion.so/Product-Requirement-Document-PRD-58b35942b5f141ffa7e198730b8fa488?pvs=4)  
+[PRD MD](PRD.md)
