@@ -22,9 +22,9 @@ public class SearchServiceController {
     @Autowired
     private SearchService searchService;
 
-    @GetMapping("/search/test")
-    public ResponseEntity<List<FileIndex>> TestIngestContent(@RequestParam(value = "tenant") String tenant,
-                                                                 @RequestParam(value = "term")String term) throws SAXException, IOException, TikaException {
+    @GetMapping("/search")
+    public ResponseEntity<List<FileIndex>> searchContent(@RequestParam(value = "tenant") String tenant,
+                                                         @RequestParam(value = "term")String term) throws IOException {
         List<FileIndex> fileIndexList = searchService.getFileUrlByTerm(tenant, term);
         return new ResponseEntity<>(fileIndexList, HttpStatus.OK);
     }

@@ -1,6 +1,7 @@
 package com.zk.fcs.service;
 
 import com.zk.fcs.entity.FileIndex;
+import com.zk.fcs.entity.FileIngestionData;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
@@ -43,6 +44,14 @@ public class IngestionService {
         fileIndex.setFileName(tenant + "_" + bucket + "_" + fileName);
         fileIndex.setMetaData(metadata.toString());
         return fileIndex;
+    }
+
+    public void ingestDocument(FileIngestionData fileIngestionData) throws SAXException, IOException, TikaException {
+
+        try (InputStream inputStream = s3FileService.getFileContent(fileIngestionData.getTenant(), fileIngestionData.getFileDirectory(), fileIngestionData.getFileName())) {
+            FileIndex fileIndex = readFromInputStream(inputStream, fileIngestionData.getTenant(), fileIngestionData.getFileDirectory(), fileIngestionData.getFileName());
+            this.elasticSearchService.indexFileIndexDocument("docs_" + fileIngestionData.getTenant(), fileIndex);
+        }
     }
 
     public void ingestTestDocument(String tenant, String bucket) throws SAXException, IOException, TikaException {

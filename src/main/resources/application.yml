@@ -71,5 +71,5 @@ files-config:
           buckets:
             - name: fs-search
               url: arn:aws:s3:::fs-search
-              region: me-south-1
+              region: ap-south-1
 

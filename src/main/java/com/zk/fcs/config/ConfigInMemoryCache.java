@@ -27,12 +27,13 @@ public class ConfigInMemoryCache {
 
     public TenantConfiguration.S3Config getTenantS3Config(String tenantName, String bucketName) {
         TenantConfiguration.Tenant tenant = this.tenantConfigMap.get(tenantName);
-        TenantConfiguration.BucketConfig bucketConfig = new TenantConfiguration.BucketConfig();
-        bucketConfig.setName(bucketName);
-        if (tenant.getFileResource().getS3().getBuckets().contains(bucketConfig)) {
-            return tenant.getFileResource().getS3();
-        } else {
-            return null;
-        }
+        return tenant.getFileResource().getS3();
+//        TenantConfiguration.BucketConfig bucketConfig = new TenantConfiguration.BucketConfig();
+//        bucketConfig.setName(bucketName);
+//        if (tenant.getFileResource().getS3().getBuckets().contains(bucketConfig)) {
+//            return tenant.getFileResource().getS3();
+//        } else {
+//            return null;
+//        }
     }
 }
