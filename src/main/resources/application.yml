@@ -21,8 +21,11 @@ server:
 
 spring:
   elasticsearch.rest:
-    username: elastic
-    password: 6l2suDT5cLpESK-j2o5H
+    username: 'elastic'
+    password: '6l2suDT5cLpESK-j2o5H'
+    host: 'localhost'
+    port: '9200'
+    method: 'https'
   data:
     elasticsearch:
       cluster-name: elasticsearch

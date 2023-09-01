@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
+import java.io.InputStream;
 import java.util.List;
 
 @Service
@@ -43,7 +44,10 @@ public class S3FileService {
         }
     }
 
-    public void readFile(String fileUrl) {
+    public InputStream testReadFile(String tenant, String bucketName, String fileName) {
 
+//        InputStream inputStream = classLoader.getResourceAsStream();
+        ClassLoader classLoader = getClass().getClassLoader();
+        return classLoader.getResourceAsStream("s3Test/" + tenant + "/" + bucketName + "/" + fileName);
     }
 }
