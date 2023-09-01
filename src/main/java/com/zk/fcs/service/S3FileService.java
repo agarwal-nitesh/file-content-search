@@ -2,6 +2,8 @@ package com.zk.fcs.service;
 
 import com.zk.fcs.config.ConfigInMemoryCache;
 import com.zk.fcs.config.TenantConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -12,12 +14,15 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
 public class S3FileService {
-
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
     private final ConfigInMemoryCache configInMemoryCache;
 
     @Autowired
@@ -44,7 +49,7 @@ public class S3FileService {
         }
     }
 
-    public InputStream getFileContent(String tenant, String bucketName, String key) {
+    public void downloadFileContent(String tenant, String bucketName, String key, String localFilePath) throws FileNotFoundException, IOException {
         TenantConfiguration.S3Config s3Config = configInMemoryCache.getTenantS3Config(tenant, bucketName);
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(s3Config.getAccessKey(), s3Config.getSecretKey());
         try (S3Client s3Client = S3Client.builder()
@@ -55,7 +60,16 @@ public class S3FileService {
                     .bucket(bucketName)
                     .key(key)
                     .build();
-            return s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
+            ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
+            try (FileOutputStream fileOutputStream = new FileOutputStream(localFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = responseInputStream.read(buffer)) != -1) {
+                    fileOutputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+            log.info("File downloaded and saved to: " + localFilePath);
         }
     }
 
@@ -64,5 +78,20 @@ public class S3FileService {
 //        InputStream inputStream = classLoader.getResourceAsStream();
         ClassLoader classLoader = getClass().getClassLoader();
         return classLoader.getResourceAsStream("s3Test/" + tenant + "/" + bucketName + "/" + fileName);
+    }
+
+    public String convertInputStreamToString(InputStream inputStream)
+            throws IOException {
+
+        StringBuilder textBuilder = new StringBuilder();
+        try (Reader reader = new BufferedReader(new InputStreamReader
+                (inputStream, StandardCharsets.UTF_8))) {
+            int c = 0;
+            while ((c = reader.read()) != -1) {
+                textBuilder.append((char) c);
+            }
+        }
+        String str = textBuilder.toString();
+        return str;
     }
 }

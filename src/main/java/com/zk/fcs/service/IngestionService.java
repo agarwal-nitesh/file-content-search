@@ -14,10 +14,11 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.net.ContentHandler;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class IngestionService {
@@ -47,10 +48,14 @@ public class IngestionService {
     }
 
     public void ingestDocument(FileIngestionData fileIngestionData) throws SAXException, IOException, TikaException {
-
-        try (InputStream inputStream = s3FileService.getFileContent(fileIngestionData.getTenant(), fileIngestionData.getFileDirectory(), fileIngestionData.getFileName())) {
+        String localFilePath = "/tmp/" + fileIngestionData.getTenant() + "_" + fileIngestionData.getFileDirectory() + "_" + fileIngestionData.getFileName();
+        s3FileService.downloadFileContent(fileIngestionData.getTenant(), fileIngestionData.getFileDirectory(), fileIngestionData.getFileName(), localFilePath);
+        Path filePath = Paths.get(localFilePath);
+        try (InputStream inputStream = Files.newInputStream(filePath)) {
             FileIndex fileIndex = readFromInputStream(inputStream, fileIngestionData.getTenant(), fileIngestionData.getFileDirectory(), fileIngestionData.getFileName());
             this.elasticSearchService.indexFileIndexDocument("docs_" + fileIngestionData.getTenant(), fileIndex);
+        } finally {
+            Files.delete(filePath);
         }
     }
 

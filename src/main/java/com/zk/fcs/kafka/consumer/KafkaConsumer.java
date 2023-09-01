@@ -33,6 +33,7 @@ public class KafkaConsumer {
             this.ingestionService.ingestDocument(fileIngestionData);
 
         } catch (Exception ex) {
+            log.error("Error parsing data or ingesting data", ex);
             // retry and insert in DLQ
 
         }

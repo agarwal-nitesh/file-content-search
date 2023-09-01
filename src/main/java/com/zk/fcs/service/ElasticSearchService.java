@@ -3,9 +3,7 @@ package com.zk.fcs.service;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.SearchTemplateResponse;
+import co.elastic.clients.elasticsearch.core.*;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -98,7 +96,7 @@ public class ElasticSearchService {
     @PostConstruct
     private void init() throws IOException {
         String queryIndexOnContentAndMeta = "{\n" +
-                "    \"_source\": [\"fileName\"],\n" +
+                "    \"_source\": [\"fileName\", \"tenant\"],\n" +
                 "    \"query\": {\n" +
                 "      \"bool\": {\n" +
                 "        \"should\": [\n" +
@@ -143,5 +141,11 @@ public class ElasticSearchService {
 
         }
         return tList;
+    }
+
+    public void deleteAll(String index) throws IOException {
+        DeleteByQueryRequest request = DeleteByQueryRequest.of(d -> d.index(index)
+                .query(new MatchAllQuery.Builder().build()._toQuery()).refresh(true));
+        elasticsearchClient.deleteByQuery(request);
     }
 }
