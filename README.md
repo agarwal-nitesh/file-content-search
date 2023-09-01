@@ -20,3 +20,6 @@
 
 ### Swagger doc
 http://localhost:8085/fs/swagger-ui/index.html
+
+### Architecture
+![alt text](design.png "Architecture")
