@@ -18,3 +18,5 @@
     - The file url is the key (so that it is consumed by a specific partition) [Maintain Strong Ordering Guarantees
       ](https://www.confluent.io/blog/apache-kafka-for-service-architectures/)
 
+### Swagger doc
+http://localhost:8085/fs/swagger-ui/index.html
