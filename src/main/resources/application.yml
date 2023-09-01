@@ -39,6 +39,25 @@ spring:
     url: jdbc:postgresql://localhost:5432/file_content_search?currentSchema=fs
     username: db_user
     password: password
+  # Producer properties
+  kafka:
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    topic.name.producer: indexer_topic
+    topic.name.consumer: indexer_topic
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      group-id: indexer_all_tenants
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+auto:
+  create:
+    topics:
+      enable: true
 
 management.health.elasticsearch.enabled: false
 
