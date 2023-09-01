@@ -2,6 +2,8 @@ package com.zk.fcs.controller;
 
 import com.zk.fcs.entity.FileIndex;
 import com.zk.fcs.kafka.producer.KafkaProducer;
+import com.zk.fcs.repository.FileIngestionDataRepository;
+import com.zk.fcs.service.AdminService;
 import com.zk.fcs.service.ElasticSearchService;
 import com.zk.fcs.service.IngestionService;
 import org.apache.tika.exception.TikaException;
@@ -29,6 +31,12 @@ public class AdminController {
     @Autowired
     private ElasticSearchService elasticSearchService;
 
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
+    private FileIngestionDataRepository fileIngestionDataRepository;
+
     @GetMapping("/health")
     public ResponseEntity<Map<String, Object>> customHealth() {
         Map<String, Object> response = new HashMap<>();
@@ -39,7 +47,7 @@ public class AdminController {
     @PostMapping("/test/es/ingest")
     public ResponseEntity<Map<String, Object>> TestIngestContent(@RequestParam(value = "tenant") String tenant,
                                                                  @RequestParam(value = "bucket")String bucket) throws SAXException, IOException, TikaException {
-        ingestionService.ingestTestDocument(tenant, bucket);
+        adminService.ingestTestDocument(tenant, bucket);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
@@ -54,6 +62,12 @@ public class AdminController {
     @GetMapping("/test/es/deleteAll")
     public ResponseEntity<List<FileIndex>> TestDeleteAllDocs(@RequestParam(value = "index") String index) throws IOException {
         elasticSearchService.deleteAll(index);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    @GetMapping("/test/pg/deleteAll")
+    public ResponseEntity<List<FileIndex>> TestDeleteAllPgData() throws IOException {
+        fileIngestionDataRepository.deleteAll();
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

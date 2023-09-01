@@ -2,7 +2,6 @@ package com.zk.fcs.kafka.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zk.fcs.entity.FileIngestionData;
-import com.zk.fcs.kafka.producer.KafkaProducer;
 import com.zk.fcs.service.IngestionService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;

@@ -1,6 +1,5 @@
 package com.zk.fcs.service;
 
-import co.elastic.clients.json.JsonData;
 import com.zk.fcs.entity.FileIndex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

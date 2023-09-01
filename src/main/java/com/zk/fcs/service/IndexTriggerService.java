@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class IndexTriggerService {
@@ -21,27 +20,33 @@ public class IndexTriggerService {
 
     private final String fileIndexerTopic;
 
+    private final CDCDBService cdcdbService;
+
     @Autowired
     public IndexTriggerService(S3FileService s3FileService, KafkaProducer kafkaProducer,
                                @Value("${spring.kafka.topic.name.producer}") String producerTopic,
-                               ObjectMapper objectMapper) {
+                               ObjectMapper objectMapper, CDCDBService cdcdbService) {
         this.s3FileService = s3FileService;
         this.kafkaProducer = kafkaProducer;
         this.fileIndexerTopic = producerTopic;
         this.objectMapper = objectMapper;
+        this.cdcdbService = cdcdbService;
     }
 
     public void triggerIndexing(String tenant, String bucketName) throws JsonProcessingException {
         List<S3Object> s3Objects = s3FileService.getAllFiles(tenant, bucketName);
         for (S3Object s3Object: s3Objects) {
             FileIngestionData fileIngestionData = new FileIngestionData();
-            fileIngestionData.setLastRunTs(s3Object.lastModified().toEpochMilli());
             fileIngestionData.setFileName(s3Object.key());
             fileIngestionData.setFileDirectory(bucketName);
             fileIngestionData.setSource(FileIngestionData.FileSource.S3);
             fileIngestionData.setTenant(tenant);
             fileIngestionData.setTag(s3Object.eTag());
             fileIngestionData.setSize(s3Object.size());
+            FileIngestionData lastProcessedData = cdcdbService.fetchFileIngestionDataByName(fileIngestionData.getFileName());
+            if (lastProcessedData != null && lastProcessedData.getLastRunTs() > s3Object.lastModified().toEpochMilli()) {
+                return;
+            }
             kafkaProducer.send(fileIndexerTopic, tenant + "_" + bucketName + "_" + fileIngestionData.getFileName(), this.objectMapper.writeValueAsString(fileIngestionData));
         }
     }

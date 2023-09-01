@@ -14,10 +14,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -71,27 +70,5 @@ public class S3FileService {
 
             log.info("File downloaded and saved to: " + localFilePath);
         }
-    }
-
-    public InputStream testReadFile(String tenant, String bucketName, String fileName) {
-
-//        InputStream inputStream = classLoader.getResourceAsStream();
-        ClassLoader classLoader = getClass().getClassLoader();
-        return classLoader.getResourceAsStream("s3Test/" + tenant + "/" + bucketName + "/" + fileName);
-    }
-
-    public String convertInputStreamToString(InputStream inputStream)
-            throws IOException {
-
-        StringBuilder textBuilder = new StringBuilder();
-        try (Reader reader = new BufferedReader(new InputStreamReader
-                (inputStream, StandardCharsets.UTF_8))) {
-            int c = 0;
-            while ((c = reader.read()) != -1) {
-                textBuilder.append((char) c);
-            }
-        }
-        String str = textBuilder.toString();
-        return str;
     }
 }
